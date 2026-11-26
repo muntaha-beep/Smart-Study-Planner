@@ -99,6 +99,13 @@ def validate_time(text):
 
 def validate_duration(value):
     """Duration must be a positive whole number of minutes."""
+    # FIXED: a decimal such as 30.5 used to be cut to 30 without any warning.
+    if isinstance(value, bool):
+        raise DatabaseError("Duration must be a whole number of minutes.")
+    if isinstance(value, float):
+        if not value.is_integer():
+            raise DatabaseError("Duration must be a whole number of minutes.")
+        value = int(value)
     try:
         minutes = int(value)
     except (TypeError, ValueError):
